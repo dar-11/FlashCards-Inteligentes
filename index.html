@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #d817de 0%, #c70a97 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            background: rgb(233, 181, 228);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .form-container h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #d817de 0%, #c70a97);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            perspective: 1000px;
+            height: 200px;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #f5dfdf 0%, #a9b0b8 100%);
+            color: #333;
+            border: 2px solid #e9ecef;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #d817de 0%, #c70a97 100%);
+            color: white;
+            transform: rotateY(180deg);
+            border:3px solid purple; 
+        }
+
+        .card-content {
+            font-size: 1.1rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+            max-height: 100%;
+            overflow-y: auto;
+        }
+
+        .card-front .card-content {
+            font-weight: bold;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgb(39, 1, 1);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+            z-index: 10;
+        }
+
+        .delete-btn:hover {
+            background: red;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+
+        .stats {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Flashcards</h1>
+            <p>Estudia  y crea con tus propias tarjetas de memoria</p>
+        </div>
+
+        <div class="stats">
+            <span id="cardCount">0 tarjetas creadas</span>
+        </div>
+
+        <div class="form-container">
+            <h2>Crear Nueva Tarjeta</h2>
+            <form id="flashcardForm">
+                <div class="form-group">
+                    <label for="question">Pregunta:</label>
+                    <textarea id="question" placeholder="Escribe la pregunta aquí..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="answer">Respuesta:</label>
+                    <textarea id="answer" placeholder="Escribe la respuesta aquí..." required></textarea>
+                </div>
+                <button type="submit" class="btn">Crear Tarjeta</button>
+            </form>
+        </div>
+
+        <div id="cardsContainer" class="cards-container"></div>
+        
+    </div>
+    <script>
+        class FlashcardApp {
+            constructor() {
+                this.cards = [];
+                this.cardsContainer = document.getElementById('cardsContainer');
+                this.emptyState = document.getElementById('emptyState');
+                this.cardCount = document.getElementById('cardCount');
+                this.form = document.getElementById('flashcardForm');
+                this.questionInput = document.getElementById('question');
+                this.answerInput = document.getElementById('answer');
+                
+                this.init();
+            }
+
+            init() {
+                this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+                this.updateStats();
+            }
+
+            handleSubmit(e) {
+                e.preventDefault();
+              const question = this.questionInput.value.trim();
+                const answer = this.answerInput.value.trim();
+                
+                if (question && answer) {
+                    this.createCard(question, answer);
+                    this.form.reset();
+                    this.questionInput.focus();
+                }
+            }
+
+            createCard(question, answer) {
+                const cardData = {
+                    id: Date.now(),
+                    question: question,
+                    answer: answer
+                };
+                
+                this.cards.push(cardData);
+                this.renderCard(cardData);
+                this.updateStats();
+                this.toggleEmptyState();
+            }
+
+            renderCard(cardData) {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card';
+                cardElement.setAttribute('data-id', cardData.id);
+
+                const cardInner = document.createElement('div');
+                cardInner.className = 'card-inner';
+
+                const cardFront = document.createElement('div');
+                cardFront.className = 'card-front';
+
+                const cardBack = document.createElement('div');
+                cardBack.className = 'card-back';
+
+                const questionContent = document.createElement('div');
+                questionContent.className = 'card-content';
+                questionContent.innerText = cardData.question;
+
+                const answerContent = document.createElement('div');
+                answerContent.className = 'card-content';
+                answerContent.innerText = cardData.answer;
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.innerHTML = '×';
+                deleteBtn.title = 'Eliminar tarjeta';
+
+                cardFront.appendChild(questionContent);
+                cardBack.appendChild(answerContent);
+                cardFront.appendChild(deleteBtn);
+                
+                cardInner.appendChild(cardFront);
+                cardInner.appendChild(cardBack);
+                cardElement.appendChild(cardInner)
+
+                cardInner.addEventListener('click', (e) => {
+                    if (e.target !== deleteBtn) {
+                        this.flipCard(cardElement);
+                    }
+                });
+
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.deleteCard(cardData.id, cardElement);
+                });
+
+                this.cardsContainer.appendChild(cardElement);
+            }
+
+            flipCard(cardElement) {
+                cardElement.classList.toggle('flipped');
+            }
+
+            deleteCard(cardId, cardElement) {
+                if (confirm('¿Seguro de que desea eliminar esta tarjeta?')) {
+        
+                    this.cards = this.cards.filter(card => card.id !== cardId);
+                    
+                    cardElement.style.transform = 'scale(0)';
+                    cardElement.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        cardElement.remove();
+                        this.updateStats();
+                        this.toggleEmptyState();
+                    }, 300);
+                }
+            }
+
+            updateStats() {
+                const count = this.cards.length;
+                this.cardCount.innerText = `${count} tarjeta${count !== 1 ? 's' : ''} creada${count !== 1 ? 's' : ''}`;
+            }
+
+            toggleEmptyState() {
+                if (this.cards.length === 0) {
+                    this.emptyState.style.display = 'block';
+                } else {
+                    this.emptyState.style.display = 'none';
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new FlashcardApp();
+        });
+    </script>
+</body>
+</html>
